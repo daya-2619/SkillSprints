@@ -1,0 +1,11 @@
+# .gitignore
+node_modules/
+.expo/
+.expo-shared/
+*.log
+__pycache__/
+*.pyc
+.env
+.DS_Store
+build/
+coverage/
