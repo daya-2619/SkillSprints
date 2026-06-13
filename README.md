@@ -1,4 +1,4 @@
-# AI‑Powered Micro‑Learning Platform (skillsprint Clone)
+# AI‑Powered Micro‑Learning Platform - skillsprint
 
 This repository contains the full stack for a production‑ready mobile learning application built with:
 - **Frontend**: React Native, Expo SDK, TypeScript, Expo Router, Zustand, React Query, Reanimated, etc.
