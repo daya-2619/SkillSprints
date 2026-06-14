@@ -167,10 +167,17 @@ export default function SignupScreen() {
     try {
       console.log('Attempting Clerk verification with code:', code.trim());
       const result = await (signUp as any).verifyEmailCode({ code: code.trim() });
-      console.log('Clerk verification attempt result status:', result.status);
+      
+      const currentStatus = result?.status || signUp.status;
+      const currentSessionId = result?.createdSessionId || signUp.createdSessionId;
+      
+      console.log('Clerk verification attempt result status:', result?.status);
       console.log('Clerk verification attempt full result:', JSON.stringify(result, null, 2));
+      console.log('Clerk hook state signUp.status:', signUp.status);
+      console.log('Clerk hook state signUp.createdSessionId:', signUp.createdSessionId);
+      console.log('Resolved Status:', currentStatus, 'Resolved Session ID:', currentSessionId);
 
-      if (result.status === 'complete') {
+      if (currentStatus === 'complete') {
         // Automatically sync and register in backend database!
         try {
           const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
@@ -217,10 +224,10 @@ export default function SignupScreen() {
           console.error('Failed to sync signup/login with backend database:', dbErr);
         }
 
-        await setActive({ session: result.createdSessionId });
+        await setActive({ session: currentSessionId });
         router.replace('/(main)/home');
       } else {
-        setError(`Verification failed. Status: ${result.status}`);
+        setError(`Verification failed. Status: ${currentStatus}`);
       }
     } catch (err: any) {
       console.error('Clerk verification error:', err);
