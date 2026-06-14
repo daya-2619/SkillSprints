@@ -15,6 +15,7 @@ import { useSignUp, useClerk } from '@clerk/expo';
 import { useRouter, Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
+import { getApiBaseUrl } from '../../utils/api';
 
 const T = {
   bg: '#0d0e12',
@@ -180,7 +181,7 @@ export default function SignupScreen() {
       if (currentStatus === 'complete') {
         // Automatically sync and register in backend database!
         try {
-          const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+          const apiBaseUrl = getApiBaseUrl();
           console.log('Registering user in backend DB at:', apiBaseUrl);
           const name = `${firstName} ${lastName}`.trim();
           

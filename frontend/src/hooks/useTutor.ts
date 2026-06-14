@@ -1,6 +1,7 @@
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
+import { getApiBaseUrl } from "../utils/api";
 
 interface TutorRequest {
   prompt: string;
@@ -26,7 +27,7 @@ export function useTutor(): UseMutationResult<TutorResponse, Error, TutorRequest
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const resp = await fetch(`${process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/tutor/ask`, {
+      const resp = await fetch(`${getApiBaseUrl()}/api/v1/tutor/ask`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),

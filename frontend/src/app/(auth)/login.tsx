@@ -16,6 +16,7 @@ import { useSignIn, useClerk } from '@clerk/expo';
 import { useRouter, Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
+import { getApiBaseUrl } from '../../utils/api';
 
 const T = {
   bg: '#0d0e12',
@@ -155,7 +156,7 @@ export default function LoginScreen() {
       if (result.status === 'complete') {
         // Retrieve and sync with the backend database
         try {
-          const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+          const apiBaseUrl = getApiBaseUrl();
           console.log('Syncing login with backend at:', apiBaseUrl);
           
           const formData = new URLSearchParams();
