@@ -6,7 +6,13 @@ from starlette.middleware.sessions import SessionMiddleware
 from backend.app.api.v1 import auth, feeds, courses, quiz, tutor, live
 from backend.app.core.security import jwt_auth_middleware
 
+from backend.app.db import init_db
+
 app = FastAPI(title="skillsprint API", version="0.1.0")
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
 
 # CORS
 app.add_middleware(
