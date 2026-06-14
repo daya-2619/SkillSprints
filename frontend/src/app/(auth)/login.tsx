@@ -150,10 +150,17 @@ export default function LoginScreen() {
     try {
       console.log('Attempting Clerk sign in for:', email.trim());
       const result = await (signIn as any).create({ identifier: email.trim(), password });
-      console.log('Clerk sign in result status:', result.status);
-      console.log('Clerk sign in full result:', JSON.stringify(result, null, 2));
+      
+      const currentStatus = result?.status || signIn.status;
+      const currentSessionId = result?.createdSessionId || signIn.createdSessionId;
 
-      if (result.status === 'complete') {
+      console.log('Clerk sign in result status:', result?.status);
+      console.log('Clerk sign in full result:', JSON.stringify(result, null, 2));
+      console.log('Clerk hook state signIn.status:', signIn.status);
+      console.log('Clerk hook state signIn.createdSessionId:', signIn.createdSessionId);
+      console.log('Resolved Status:', currentStatus, 'Resolved Session ID:', currentSessionId);
+
+      if (currentStatus === 'complete') {
         // Retrieve and sync with the backend database
         try {
           const apiBaseUrl = getApiBaseUrl();
@@ -212,10 +219,10 @@ export default function LoginScreen() {
           console.error('Failed to sync login/signup with backend database:', dbErr);
         }
 
-        await setActive({ session: result.createdSessionId });
+        await setActive({ session: currentSessionId });
         router.replace('/(main)/home');
       } else {
-        setError(`Sign in incomplete. Status: ${result.status}. Please check if email verification is completed.`);
+        setError(`Sign in incomplete. Status: ${currentStatus}. Please check if email verification is completed.`);
       }
     } catch (err: any) {
       console.error('Clerk sign in error:', err);
