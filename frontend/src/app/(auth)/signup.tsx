@@ -144,10 +144,7 @@ export default function SignupScreen() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
-      // Cast to 'any' to work around a @clerk/expo v3 typings bug:
-      // SignUpFutureResource doesn't declare prepareEmailAddressVerification
-      // even though the method exists at runtime on SignUpResource.
-      await (signUp as any).prepareEmailAddressVerification({ strategy: 'email_code' });
+      await (signUp as any).prepareVerification({ strategy: 'email_code' });
       setStep('verify');
     } catch (err: any) {
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign up failed.');
@@ -163,11 +160,7 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
     try {
-      // Cast to 'any' — SignUpFutureResource in @clerk/expo v3 typings omits
-      // action methods (attemptEmailAddressVerification, etc.) even though
-      // they exist at runtime. One cast here covers all method calls below.
-      const su = signUp as any;
-      const result = await su.attemptEmailAddressVerification({ code: code.trim() });
+      const result = await (signUp as any).attemptVerification({ strategy: 'email_code', code: code.trim() });
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
         router.replace('/(main)/home');

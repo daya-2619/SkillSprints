@@ -218,7 +218,7 @@ export default function ClerkAuthScreen({ onAuthenticated }: { onAuthenticated: 
     setError('');
     try {
       await (signUp as any).create({ emailAddress: email, password, firstName, lastName });
-      await (signUp as any).prepareEmailAddressVerification({ strategy: 'email_code' });
+      await (signUp as any).prepareVerification({ strategy: 'email_code' });
       switchMode('verify');
     } catch (err: any) {
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign up failed.');
@@ -234,7 +234,7 @@ export default function ClerkAuthScreen({ onAuthenticated }: { onAuthenticated: 
     setLoading(true);
     setError('');
     try {
-      const result = await (signUp as any).attemptEmailAddressVerification({ code });
+      const result = await (signUp as any).attemptVerification({ strategy: 'email_code', code });
       if (result.status === 'complete') {
         await setActive({ session: result.createdSessionId });
         onAuthenticated();
