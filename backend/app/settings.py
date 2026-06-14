@@ -20,13 +20,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "skillsprint"
     POSTGRES_HOST: str = "db"
     POSTGRES_PORT: int = 5432
-
-    @property
-    def DATABASE_URL(self) -> str:
-        return (
-            f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-            f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-        )
+    DATABASE_URL: str | None = None
 
     class Config:
         env_file = ".env"
