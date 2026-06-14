@@ -139,17 +139,6 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
     try {
-      console.log('signUp properties:', Object.keys(signUp));
-      try {
-        console.log('signUp prototype:', Object.getOwnPropertyNames(Object.getPrototypeOf(signUp)));
-      } catch (protoErr) {
-        console.log('Failed to read prototype:', protoErr);
-      }
-      console.log('has prepareVerification:', typeof (signUp as any).prepareVerification);
-      console.log('has prepareEmailAddressVerification:', typeof (signUp as any).prepareEmailAddressVerification);
-      console.log('has attemptVerification:', typeof (signUp as any).attemptVerification);
-      console.log('has attemptEmailAddressVerification:', typeof (signUp as any).attemptEmailAddressVerification);
-      
       console.log('Attempting Clerk signup for:', email.trim());
       await (signUp as any).create({
         emailAddress: email.trim(),
@@ -158,8 +147,8 @@ export default function SignupScreen() {
         lastName: lastName.trim(),
       });
       console.log('Clerk signup create complete.');
-      await (signUp as any).prepareVerification({ strategy: 'email_code' });
-      console.log('Clerk verification prepared successfully.');
+      await (signUp as any).sendEmailCode();
+      console.log('Clerk verification code sent successfully.');
       setStep('verify');
     } catch (err: any) {
       console.error('Clerk signup error:', err);
@@ -177,7 +166,7 @@ export default function SignupScreen() {
     setError('');
     try {
       console.log('Attempting Clerk verification with code:', code.trim());
-      const result = await (signUp as any).attemptVerification({ strategy: 'email_code', code: code.trim() });
+      const result = await (signUp as any).verifyEmailCode({ code: code.trim() });
       console.log('Clerk verification attempt result status:', result.status);
       console.log('Clerk verification attempt full result:', JSON.stringify(result, null, 2));
 
