@@ -140,14 +140,14 @@ export default function SignupScreen() {
     setError('');
     try {
       console.log('Attempting Clerk signup for:', email.trim());
-      const signUpAttempt = await signUp.create({
+      await (signUp as any).create({
         emailAddress: email.trim(),
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
-      console.log('Clerk signup create result:', JSON.stringify(signUpAttempt, null, 2));
-      await (signUpAttempt as any).prepareVerification({ strategy: 'email_code' });
+      console.log('Clerk signup create complete.');
+      await (signUp as any).prepareVerification({ strategy: 'email_code' });
       console.log('Clerk verification prepared successfully.');
       setStep('verify');
     } catch (err: any) {
