@@ -15,6 +15,7 @@ import {
 import { useSignIn, useClerk } from '@clerk/expo';
 import { useRouter, Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as SecureStore from 'expo-secure-store';
 
 const T = {
   bg: '#0d0e12',
@@ -30,6 +31,7 @@ const T = {
   border: '#2e3248',
   glass: 'rgba(255,255,255,0.04)',
   error: '#f87171',
+  style: '#f3f4f6',
 };
 
 // ─── Animated Floating Label Input ─────────────────────────────────────────
@@ -145,14 +147,77 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
     try {
+      console.log('Attempting Clerk sign in for:', email.trim());
       const result = await (signIn as any).create({ identifier: email.trim(), password });
+      console.log('Clerk sign in result status:', result.status);
+      console.log('Clerk sign in full result:', JSON.stringify(result, null, 2));
+
       if (result.status === 'complete') {
+        // Retrieve and sync with the backend database
+        try {
+          const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+          console.log('Syncing login with backend at:', apiBaseUrl);
+          
+          const formData = new URLSearchParams();
+          formData.append('username', email.trim());
+          formData.append('password', password);
+
+          let backendResp = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData.toString(),
+          });
+
+          // If database user does not exist, auto-register them
+          if (backendResp.status === 401 || backendResp.status === 404) {
+            console.log('User not found in backend DB, auto-registering...');
+            const name = email.trim().split('@')[0];
+            const signupResp = await fetch(`${apiBaseUrl}/api/v1/auth/signup`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: email.trim(),
+                password: password,
+                name: name || 'Student',
+              }),
+            });
+
+            if (signupResp.ok) {
+              console.log('Backend DB auto-registration succeeded, logging in...');
+              backendResp = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString(),
+              });
+            } else {
+              console.warn('Backend DB auto-registration failed:', await signupResp.text());
+            }
+          }
+
+          if (backendResp.ok) {
+            const tokenData = await backendResp.json();
+            console.log('Backend sync login successful.');
+            await SecureStore.setItemAsync('access_token', tokenData.access_token);
+          } else {
+            console.warn('Backend login failed with status:', backendResp.status);
+          }
+        } catch (dbErr) {
+          console.error('Failed to sync login/signup with backend database:', dbErr);
+        }
+
         await setActive({ session: result.createdSessionId });
         router.replace('/(main)/home');
       } else {
-        setError('Sign in incomplete. Please try again.');
+        setError(`Sign in incomplete. Status: ${result.status}. Please check if email verification is completed.`);
       }
     } catch (err: any) {
+      console.error('Clerk sign in error:', err);
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign in failed.');
     } finally {
       setLoading(false);

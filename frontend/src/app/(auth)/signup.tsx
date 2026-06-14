@@ -14,6 +14,7 @@ import {
 import { useSignUp, useClerk } from '@clerk/expo';
 import { useRouter, Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as SecureStore from 'expo-secure-store';
 
 const T = {
   bg: '#0d0e12',
@@ -138,15 +139,19 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
     try {
+      console.log('Attempting Clerk signup for:', email.trim());
       const signUpAttempt = await signUp.create({
         emailAddress: email.trim(),
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
+      console.log('Clerk signup create result:', JSON.stringify(signUpAttempt, null, 2));
       await (signUpAttempt as any).prepareVerification({ strategy: 'email_code' });
+      console.log('Clerk verification prepared successfully.');
       setStep('verify');
     } catch (err: any) {
+      console.error('Clerk signup error:', err);
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign up failed.');
     } finally {
       setLoading(false);
@@ -160,19 +165,70 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
     try {
+      console.log('Attempting Clerk verification with code:', code.trim());
       const result = await (signUp as any).attemptVerification({ strategy: 'email_code', code: code.trim() });
+      console.log('Clerk verification attempt result status:', result.status);
+      console.log('Clerk verification attempt full result:', JSON.stringify(result, null, 2));
+
       if (result.status === 'complete') {
+        // Automatically sync and register in backend database!
+        try {
+          const apiBaseUrl = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000";
+          console.log('Registering user in backend DB at:', apiBaseUrl);
+          const name = `${firstName} ${lastName}`.trim();
+          
+          // 1. Post to signup
+          const signupResp = await fetch(`${apiBaseUrl}/api/v1/auth/signup`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email.trim(),
+              password: password,
+              name: name || 'Student',
+            }),
+          });
+
+          if (signupResp.ok) {
+            console.log('Backend DB registration successful. Logging in...');
+            // 2. Post to login to get JWT token
+            const formData = new URLSearchParams();
+            formData.append('username', email.trim());
+            formData.append('password', password);
+
+            const loginResp = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: formData.toString(),
+            });
+
+            if (loginResp.ok) {
+              const tokenData = await loginResp.json();
+              await SecureStore.setItemAsync('access_token', tokenData.access_token);
+              console.log('Backend sync login successful.');
+            }
+          } else {
+            console.warn('Backend DB registration failed:', await signupResp.text());
+          }
+        } catch (dbErr) {
+          console.error('Failed to sync signup/login with backend database:', dbErr);
+        }
+
         await setActive({ session: result.createdSessionId });
         router.replace('/(main)/home');
       } else {
-        setError('Verification failed. Please try again.');
+        setError(`Verification failed. Status: ${result.status}`);
       }
     } catch (err: any) {
+      console.error('Clerk verification error:', err);
       setError(err.errors?.[0]?.longMessage || err.message || 'Verification failed.');
     } finally {
       setLoading(false);
     }
-  }, [signUp, code]);
+  }, [signUp, code, email, password, firstName, lastName]);
 
 
   return (
