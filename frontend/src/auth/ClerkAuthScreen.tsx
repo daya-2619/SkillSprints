@@ -217,8 +217,8 @@ export default function ClerkAuthScreen({ onAuthenticated }: { onAuthenticated: 
     setLoading(true);
     setError('');
     try {
-      await (signUp as any).create({ emailAddress: email, password, firstName, lastName });
-      await (signUp as any).prepareVerification({ strategy: 'email_code' });
+      const signUpAttempt = await (signUp as any).create({ emailAddress: email, password, firstName, lastName });
+      await signUpAttempt.prepareVerification({ strategy: 'email_code' });
       switchMode('verify');
     } catch (err: any) {
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign up failed.');

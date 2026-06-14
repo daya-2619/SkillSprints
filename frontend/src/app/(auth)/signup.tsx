@@ -138,13 +138,13 @@ export default function SignupScreen() {
     setLoading(true);
     setError('');
     try {
-      await signUp.create({
+      const signUpAttempt = await signUp.create({
         emailAddress: email.trim(),
         password,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
-      await (signUp as any).prepareVerification({ strategy: 'email_code' });
+      await (signUpAttempt as any).prepareVerification({ strategy: 'email_code' });
       setStep('verify');
     } catch (err: any) {
       setError(err.errors?.[0]?.longMessage || err.message || 'Sign up failed.');
