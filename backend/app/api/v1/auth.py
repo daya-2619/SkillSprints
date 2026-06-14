@@ -1,4 +1,4 @@
-// backend/app/api/v1/auth.py
+# backend/app/api/v1/auth.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr, Field
@@ -7,7 +7,8 @@ from backend.app.core.security.password import verify_password, get_password_has
 from backend.app.models.user import User
 from backend.app.db import get_db
 from sqlalchemy.orm import Session
-import os, jwt, datetime
+from jose import jwt
+import os, datetime
 
 router = APIRouter()
 

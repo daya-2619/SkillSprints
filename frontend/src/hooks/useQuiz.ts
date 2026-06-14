@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 export const useQuiz = () => {
-  const [quizData, setQuizData] = useState(null);
+  const [quizData, setQuizData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchQuiz = async (courseId: string) => {

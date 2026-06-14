@@ -14,3 +14,4 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     role = relationship("Role", back_populates="users")
+    courses = relationship("Course", back_populates="instructor")

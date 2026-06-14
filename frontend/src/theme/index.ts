@@ -11,6 +11,8 @@ export const colors = {
   textSecondary: '#CCCCCC',
   error: '#FF453A',
   success: '#32D74B',
+  primaryLight: 'rgba(10, 132, 255, 0.15)',
+  accent: '#A855F7',
 };
 
 export const gradients = {
@@ -38,6 +40,12 @@ export const typography = {
   body: {
     fontFamily: 'Inter',
     fontWeight: '400' as '400',
+    fontSize: 16,
+    color: colors.textPrimary,
+  },
+  bodyBold: {
+    fontFamily: 'Inter',
+    fontWeight: '700' as '700',
     fontSize: 16,
     color: colors.textPrimary,
   },

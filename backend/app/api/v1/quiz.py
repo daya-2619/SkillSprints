@@ -1,8 +1,8 @@
-// backend/app/api/v1/quiz.py
+# backend/app/api/v1/quiz.py
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.services.llm import OllamaClient
+from backend.app.services.llm import OllamaClient
 
 router = APIRouter()
 

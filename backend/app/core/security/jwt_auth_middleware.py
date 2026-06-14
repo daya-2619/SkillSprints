@@ -1,4 +1,4 @@
-// backend/app/core/security/jwt_auth_middleware.py
+# backend/app/core/security/jwt_auth_middleware.py
 import json
 from typing import Callable
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -13,7 +13,12 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next: Callable):
         # Bypass auth for open endpoints
-        if request.url.path.startswith("/health") or request.url.path.startswith("/docs"):
+        if (
+            request.url.path.startswith("/health")
+            or request.url.path.startswith("/docs")
+            or request.url.path.startswith("/openapi.json")
+            or request.url.path.startswith("/api/v1/auth/")
+        ):
             return await call_next(request)
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):

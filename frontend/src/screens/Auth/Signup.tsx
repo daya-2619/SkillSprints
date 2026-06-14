@@ -11,9 +11,11 @@ export default function SignupScreen() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const signupMutation = useMutation(async () => {
-    // TODO: call backend /auth/signup endpoint
-    return { success: true };
+  const signupMutation = useMutation({
+    mutationFn: async () => {
+      // TODO: call backend /auth/signup endpoint
+      return { success: true };
+    }
   });
 
   const handleSignup = async () => {

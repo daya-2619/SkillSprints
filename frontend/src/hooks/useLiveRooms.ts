@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export const useLiveRooms = () => {
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState<any[]>([]);
 
   useEffect(() => {
     // WebSocket / API call placeholder

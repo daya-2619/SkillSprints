@@ -6,7 +6,7 @@ import { useTutor } from "../hooks/useTutor";
 
 export default function TutorScreen() {
   const [prompt, setPrompt] = useState("");
-  const { mutateAsync, isLoading, data, error } = useTutor();
+  const { mutateAsync, isPending, data, error } = useTutor();
 
   const handleAsk = async () => {
     if (!prompt.trim()) return;
@@ -23,8 +23,8 @@ export default function TutorScreen() {
         value={prompt}
         onChangeText={setPrompt}
       />
-      <Button title="Ask" onPress={handleAsk} disabled={isLoading} />
-      {isLoading && <ActivityIndicator style={styles.loader} />}
+      <Button title="Ask" onPress={handleAsk} disabled={isPending} />
+      {isPending && <ActivityIndicator style={styles.loader} />}
       {error && <Text style={styles.error}>Error: {error.message}</Text>}
       {data && (
         <View style={styles.responseBox}>

@@ -4,7 +4,7 @@ import LoginScreen from '../app/(auth)/login';
 
 describe('LoginScreen', () => {
   it('renders correctly', () => {
-    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
+    const { getByPlaceholderText, getByText } = render(<LoginScreen />) as any;
     
     expect(getByText('Welcome Back')).toBeTruthy();
     expect(getByPlaceholderText('Email')).toBeTruthy();
@@ -12,7 +12,7 @@ describe('LoginScreen', () => {
   });
 
   it('updates email and password state on input', () => {
-    const { getByPlaceholderText } = render(<LoginScreen />);
+    const { getByPlaceholderText } = render(<LoginScreen />) as any;
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');
 

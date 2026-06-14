@@ -1,6 +1,6 @@
 import httpx
 import json
-from .settings import Settings
+from backend.app.settings import Settings
 
 settings = Settings()
 

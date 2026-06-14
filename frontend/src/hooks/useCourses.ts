@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export const useCourses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

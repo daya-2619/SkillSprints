@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import Animated, { useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 
 const { height, width } = Dimensions.get('window');
 
 interface FeedItemProps {
   item: { id: string; title: string; video_url: string };
   index: number;
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
 }
 
 export default function FeedItem({ item, index, scrollY }: FeedItemProps) {
@@ -16,7 +16,7 @@ export default function FeedItem({ item, index, scrollY }: FeedItemProps) {
       scrollY.value,
       [(index - 1) * height, index * height, (index + 1) * height],
       [0.9, 1, 0.9],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     return { transform: [{ scale }] };
   });

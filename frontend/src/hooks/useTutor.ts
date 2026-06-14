@@ -17,8 +17,8 @@ interface TutorResponse {
  * Returns a mutation object with `mutateAsync` for manual trigger.
  */
 export function useTutor(): UseMutationResult<TutorResponse, Error, TutorRequest> {
-  return useMutation<TutorResponse, Error, TutorRequest>(
-    async (payload) => {
+  return useMutation<TutorResponse, Error, TutorRequest>({
+    mutationFn: async (payload) => {
       const resp = await fetch(`${process.env.EXPO_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/tutor/ask`, {
         method: "POST",
         headers: {
@@ -33,10 +33,8 @@ export function useTutor(): UseMutationResult<TutorResponse, Error, TutorRequest
       const data: TutorResponse = await resp.json();
       return data;
     },
-    {
-      onError: (error) => {
-        Alert.alert("Error", error.message);
-      },
-    }
-  );
+    onError: (error) => {
+      Alert.alert("Error", error.message);
+    },
+  });
 }

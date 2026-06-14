@@ -10,9 +10,11 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const loginMutation = useMutation(async () => {
-    // TODO: call backend /auth/login endpoint
-    return { success: true };
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      // TODO: call backend /auth/login endpoint
+      return { success: true };
+    }
   });
 
   const handleLogin = async () => {

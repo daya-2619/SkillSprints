@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Dimensions } from 'react-native';
 import Animated, { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
-import FeedItem from '../components/FeedItem';
+import FeedItem from '../../components/FeedItem';
 
 const { height } = Dimensions.get('window');
 
